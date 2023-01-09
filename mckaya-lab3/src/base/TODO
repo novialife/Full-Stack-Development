@@ -1,0 +1,36 @@
+Specifika krav:
+
+Lintning.
+    Ni skall använda de medföljande lint-skripten (package.json filen) utan modifikation. Vid redovisning ska dessa kunna köras UTAN NÅGRA VARNINGAR ELLER FEL.
+Databas.
+    Databasen SQLite skall användas. Skelettet kommer med ett exempel skrivet i sqlite (Länkar till en externa sida.) som använder prepared statements. Se till att ni förstår exemplet innan ni går vidare. DONE?
+    Alla queries skall vara säkra mot SQL injections. idk ksk? DONE?
+    Alla registrerade användare skall sparas i databasen. DONE
+    Inloggning skall enbart tillåtas om det angivna användarnamnet och lösenordet finns registrerat i databasen. DONE
+    Registrering av ett upptaget användarnamn skall inte vara tillåtet. DONE
+    Användarnamn samt lösenord måste vara minst 3 tecken långa samt innehålla minst en bokstav och en siffra. DONE
+Inloggning.
+    Vid lyckad inloggning:
+        Inloggningssession skall skapas och associerad kaka skall skickas till användaren. DONE
+        Redan inloggade användare ska hamna på profilsidan oavsett handling (t.ex uppdatering av sidan ändra url till login-sidan etc) med undantag för utloggning se punkt 5.3.2 nedan. DONE
+        Användaren skall bli omderigerad till dess profilsidan. DONE
+    Vid misslyckad inloggning:
+        Användaren skall bli omderigerad till inloggningssidan igen, fast med ett felmeddelande. DONE
+Utloggning.
+    Det skall finnas en utloggningsknapp på profil sidan. DONE
+    Utloggning skall enbart tillåtas för inloggad användare.  DONE
+    Vid lyckad utloggning:
+        Inloggningssessionen skall tas bort, samt assosierad kaka skall invalideras. DONE
+        Användaren skall bli omdirigerad till inloggningssidan. DONE
+Säkerhet.
+    Det skall finnas ett middelware (Länkar till en externa sida.) på serversidan som hindrar ej inloggade användare från att få tillgång till profilsidan, samt omdirigerar användaren till inloggningssidan.
+
+
+Bonusuppgift 3X (demo) (Länkar till en externa sida.)
+Alla krav i basuppgiften samt följande två krav måste uppfyllas:
+
+Passive sessionsinvalidering
+    Inloggningssessionen skall invalideras automatiskt efter en viss tid från senaste interaktion med servern (ni får välja tiden, förslagsvis 10 sekunder, för att underlätta redovisning av labben).
+Säkerhet.
+    Lösenorden som lagras i databasen skall Hash:as sam saltas med BCrypt.  (Länkar till en externa sida.)Dvs lösenord får inte lagras i klartext. DONE
+    Var redo på att besvara frågor gällande varför hash:ning och saltning är nödvändigt för lösenordssäkerhet.
