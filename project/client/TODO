@@ -1,0 +1,58 @@
+Fixa Vue för Admin login sidan, Skapa den och lägg till den i navbar
+Ändra Vue för post login sidan så att man ser tider istället för msg box
+
+Gör så att man kommer till Admin login sidan om man klickar på Admin knappen
+
+
+Översikt
+I den här labben ska ni bygga ett labbokningssystem för att kunna boka in labbtider hos specifika handledare. För att komma igång med labben är det bra att kika i README:n i git-repot ni fått tillgång till.
+
+Systemet ska bestå av 3 sidor:
+
+En bokningssida där studenter kan se handledarnas namn och vilka tider som finns för en handledare
+En bekräftelsesida där studenter fullbordar en bokning efter att ha valt en tid genom att ange sitt namn och trycka OK
+Adminsida där en handledare kan logga in med namn och lösenord och därefter redigera sina tider (ta bort/lägga till), på denna sida syns även vilka som bokat en viss tid
+
+Webbsidan hanterar två sorters objekt. Assistant och TimeSlot. Ett förslag på struktur på datan är som följer:      // IMPLEMENTERAS SOM MODELS PÅ SERVER SIDAN
+
+Assistant {
+  id: Number
+  name: String
+}
+TimeSlot {
+  assistant_id: Number // Foreign key
+  id: String
+  time: String // Tiden som visas för studenten 
+  booked_by: String //Studentens namn
+}
+
+Dessutom saknar exempleprojektet någon databas. Detta innebär att alla användare samt chattrum sparas i minne och raderas när servern stängs av. Därför så ska ni skriva om hur modeller lagras genom att integrera en databas på serversidan. Av administrativa skäl behöver denna databas vara en SQLite databas, precis som i labb 3. Kom ihåg att commit:a era SQLite filer till Github för att vi ska kunna testköra er lösning!
+
+Tips
+    Börja i tid, labb 4 är utan tvekan den tyngsta av alla labbar i kursen och den kan ta väldigt mycket tid!
+    Börja med att experimentera med det givna exemplet innan ni börjar med själva uppgiften. 50% av arbetet är att förstå hur saker hänger ihop.
+    Utgå eventuellt från exemplet och gör små inkrementella ändringar för att göra om exemplet till något som löser uppgiften. Det kan vara ganska svårt att debugga i början om man gjort stora ändringar.
+    Kom ihåg att använda er av de tillgängliga devtools i någon modern browser, inspektorn kommer att hjälpa er mycket i denna labb. Det finns även Vue specifika devtools (Länkar till en externa sida.) för flera browsers som kan vara användbara.
+    Vue använder en unik filtyp ".vue" som påminner om HTML. Många editors/IDE har stöd för ".vue" genom extensions. Vi tipsar om VSCode (Länkar till en externa sida.), samt en vue extension vid namn Vetur (Länkar till en externa sida.). Det finns även en start guide för Vue i VSCode (Länkar till en externa sida.). 
+    Och kom ihåg att ni alltid kan be en assistent om hjälp om ni har fastnat med någonting.
+
+Bonusuppgift
+    Implementera automatisk utloggning efter en viss tid (förslagsvis efter 60 sekunder) användaren inte har gjort någon aktiv handling så som klickan på en länk eller knapp i sidan samt skrivit in något i textfältet (du kan använd oninput (Länkar till en externa sida.)). Ett typiskt scenario är när användaren inte rör musen eller tangentbordet i 60 sekunder och då omdirigeras till inloggningssidan samt användaren loggats ut hos servern, d.v.s. om användaren försöker besöka en annan sida utan att logga in så kommer omdirigeras till inloggningssidan, precis som när användaren besöker sidan för absolut första gången. Du ska göra detta genom att implementera 2 av följande 3 Pollingsteknik:
+
+    Socket.io
+        Använd Socket.io för att skapa en fullduplex kommunikation mellan servern och klienten för att åstadkomma automatiska utloggningen. I denna teknik servern håller koll på klientens passivitets-tid genom att starta en timer. Klienten uppdaterar servern så fort användaren visar någon typ av aktivitet t.ex med klickning på en länk eller tangentryckning på tangentbordet vilket medför att servern nollställer och startar om sin timer.
+    
+    AJAX Polling
+        I stort sett handlar denna teknik om att regelbundet med givet tidsintervall skicka AJAX-förfrågor till servern för att få någon slags information. Detta kan genomföras på flera olika sätt, det rekommenderade är att använda sig av funktionen fetch i kombination med setTimeout/setInterval.
+        I denna uppgift ska man skicka regelbundna AJAX-förfrågor (välj ett lämpligt tidsintervall själv) för att få den aktuella tiden. Om tiden är tillgänglig, borde den omedelbart returneras till klienten. I annat fall - ett lämpligt svar från serversidan.
+        Nackdelen med denna tekniken är att den resulterar i en kraftigt ökad mängd trafik. Tänk exempelvis på situationen där informationen vid vissa tillfällen uppdateras på serversidan varje minut och vid andra tillfällen varje timme. Väljer man då ett för litet tidsintervall, kommer mängden trafik öka markant - i onödan. Väljer man ett för stort tidintervall, missar man att få informationen i fråga i tid. Problemet adresseras av tekniken nedan, d.v.s. long-polling.
+
+AJAX Long-Polling
+    Grundskillnaden mot polling är hur AJAX-förfrågor hanteras av servern. Om informationen är tillgänglig, borde den fortfarande omedelbart returneras till klienten varefter en ny AJAX-förfråga borde skickas iväg. I annat fall borde servern däremot vänta tills informationen är tillgänglig utan att stänga ner förbindelsen.
+    
+Karakterisera kort båda teknikerna med avseende på vilken part som inleder kommunikationen (klient-/serverinitierad), vilket protokoll som används samt hur kommunikationen sker (halv-/full-duplex inom/utom domän). Motivera.
+
+* Informationen nedan riktas främst till dem som inte använder Firefox. Sändning av parallella AJAX förfrågor till servern, vilket kan förekomma i long-polling bl.a. när man öppnat flera flikar i en och samma webbläsare och efterfrågat samma resurs, hanteras av webbläsarna på ett varierat sätt. Klientförfrågorna som är identiska med varandra kan av vissa av dem (t.ex. Chrome, Safari) avvisas. Resultatet är att bara en förfråga skickas ut oavsett antalet öppnade flikar. Andra (t.ex. Firefox) tillåẗer det, vilket i sin tur resulterar i en utskickad förfråga per flik. I syfte att få den aktuella tiden uppdaterad korrekt i varje flik, behöver man därmed lura vissa webbläsare att alla parallella förfrågor med ursprung i olika flikar är olika. Ett sätt att göra detta är att generera en unik, slumpmässig identifierare samt inkludera den som en parameter i URL adressen (t.ex. `/time?id=${unik_id}`) innan själva AJAX anropet utförs. Observera att denna parameter borde ignoreras av servern och dess enda syfte är att skilja klientförfrågor ur webbläsarens perspektiv. Avslutningsvis, notera att problemet ovan inte finns om man använder olika webbläsare, alternativt inkognitoläget.
+
+Tips
+Alla webbläsare har utvecklarverktyg. Dessa tillåter att inspektera vad som händer bakom kulisserna. Man kan inspektera den nuvarande DOM (Länkar till en externa sida.):en, det finns en console man kan läsa utskrifter till console.log, man kan se vilka CSS regler som påverkar vilka element, och mycket mer. Ni kan läsa här (Länkar till en externa sida.), hur ni öppnar utvecklarverktygen.
